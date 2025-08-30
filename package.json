@@ -1,7 +1,14 @@
 {
+  "name": "subshift",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "subshift": "./dist/bin/subshift.js"
+  },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/index.ts",
+    "postbuild": "chmod +x dist/bin/subshift.js && npm link",
+    "dev": "tsx bin/subshift.ts",
     "test": "vitest",
     "lint": "eslint . --fix",
     "prettier": "prettier . --write"
@@ -12,6 +19,7 @@
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.41.0",
     "vitest": "^3.2.4"
