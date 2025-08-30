@@ -1,6 +1,8 @@
 export function timecodeToMs(timecode: string): number {
   if (timecode.startsWith("-")) {
-    throw new Error(`Invalid timecode format: ${timecode}`);
+    throw new Error(
+      `Invalid timecode format: ${timecode} | negative timecodes are not supported`
+    );
   }
   const parts = timecode.split(":");
   if (
@@ -10,18 +12,24 @@ export function timecodeToMs(timecode: string): number {
     !parts[2] ||
     !parts[2].includes(",")
   ) {
-    throw new Error(`Invalid timecode format: ${timecode}`);
+    throw new Error(
+      `Invalid timecode format: ${timecode} | expected format: HH:MM:SS,mmm`
+    );
   }
   const hours = parseInt(parts[0], 10);
   const minutes = parseInt(parts[1], 10);
   const secondsParts = parts[2].split(",");
   if (secondsParts.length !== 2 || !secondsParts[0] || !secondsParts[1]) {
-    throw new Error(`Invalid timecode format: ${timecode}`);
+    throw new Error(
+      `Invalid timecode format: ${timecode} | expected format: HH:MM:SS,mmm`
+    );
   }
   const seconds = parseInt(secondsParts[0], 10);
-  const milliseconds = parseInt(secondsParts[1], 10);
+  const milliseconds = parseInt(secondsParts[1].padStart(3, "0"), 10);
   if (isNaN(hours) || isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds)) {
-    throw new Error(`Invalid timecode format: ${timecode}`);
+    throw new Error(
+      `Invalid timecode format: ${timecode} | expected format: HH:MM:SS,mmm`
+    );
   }
   return (
     hoursToMs(hours) +

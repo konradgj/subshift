@@ -12,17 +12,18 @@ export interface IShiftOptions {
 
 export interface ISubtitleFile {
   blocks: ISubtitleBlock[];
-  fileName?: string;
-  filePath?: string;
-  format?: string;
+  fileName: string;
+  filePath: string;
+  fileDir: string;
+  extension: string;
 }
 
-type ShiftByIndex = {
+export type ShiftByIndex = {
   type: "index";
   indexRange: [number, number];
 };
 
-type ShiftByTime = {
+export type ShiftByTime = {
   type: "time";
   fromTime: number;
   toTime: number;

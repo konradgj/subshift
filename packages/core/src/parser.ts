@@ -1,7 +1,7 @@
-import { ISubtitleBlock, ISubtitleFile } from "./types/subtitles.js";
+import { ISubtitleBlock } from "./types/subtitles.js";
 import { timecodeToMs } from "./utils/time.js";
 
-export function parseSrt(text: string): ISubtitleFile {
+export function parseSrt(text: string): ISubtitleBlock[] {
   const blocks: ISubtitleBlock[] = [];
   const entries = text.split(/\r?\n\r?\n+/).filter((e) => e.trim() !== "");
   if (entries.length === 0) {
@@ -26,7 +26,7 @@ export function parseSrt(text: string): ISubtitleFile {
     };
     blocks.push(block);
   }
-  return { blocks };
+  return blocks;
 }
 
 export function parseTimecode(timecode: string): [number, number] {
@@ -35,4 +35,28 @@ export function parseTimecode(timecode: string): [number, number] {
     throw new Error(`Invalid timecode format: ${timecode}`);
   }
   return [timecodeToMs(timeStamps[0]), timecodeToMs(timeStamps[1])];
+}
+
+export function parseIndexRange(range: string): [number, number] {
+  const [startStr, endStr] = range.split("-");
+  const start = parseInt(startStr, 10);
+  const end = parseInt(endStr, 10);
+
+  if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
+    throw new Error(
+      `Invalid index range: ${range} | expected format: <start-end> eg 5-10`
+    );
+  }
+  return [start, end];
+}
+
+export function parseTimeRange(start: string, end: string): [number, number] {
+  const startMs = timecodeToMs(start);
+  const endMs = timecodeToMs(end);
+  if (startMs >= endMs) {
+    throw new Error(
+      `Invalid time range: ${start} - ${end} | start time must be before end time`
+    );
+  }
+  return [startMs, endMs];
 }

@@ -1,5 +1,18 @@
 import { Command } from "commander";
-import { readFileContent } from "@subshift/core";
+import {
+  formatSrt,
+  initSubtitleFile,
+  IShiftOptions,
+  parseIndexRange,
+  parseSrt,
+  parseTimeRange,
+  readFileContent,
+  ShiftByIndex,
+  ShiftByTime,
+  shiftSubtitleFile,
+  updateFileName,
+  writeFileContent,
+} from "@subshift/core";
 
 const program = new Command();
 
@@ -26,18 +39,47 @@ program
 
     if (usingRange && (usingFrom || usingTo)) {
       console.error(
-        "❌ You cannot use -r/--indexrange together with -f/--from or -t/--to"
+        "You cannot use -r/--indexrange together with -f/--from or -t/--to"
       );
       process.exit(1);
     }
     if (usingFrom !== usingTo) {
-      console.error("❌ You must use both -f/--from and -t/--to together");
+      console.error("You must use both -f/--from and -t/--to together");
       process.exit(1);
     }
-    const fileContent = await readFileContent(inputFile);
-    console.log("File content:", fileContent);
-    console.log("Milliseconds to shift:", milliseconds);
-    console.log("Options:", options);
+
+    try {
+      const fileContent = await readFileContent(inputFile);
+      const subtitleBlocks = parseSrt(fileContent);
+      const subtitleFile = initSubtitleFile(subtitleBlocks, inputFile);
+      const shiftOptions: IShiftOptions = { ms: milliseconds };
+
+      if (usingRange) {
+        const [start, end] = parseIndexRange(options.indexrange);
+        shiftOptions.shiftBy = { indexRange: [start, end] } as ShiftByIndex;
+      } else if (usingFrom && usingTo) {
+        const [from, to] = parseTimeRange(options.from, options.to);
+        shiftOptions.shiftBy = { fromTime: from, toTime: to } as ShiftByTime;
+      }
+
+      let infoString = `Shifting subtitles in file: ${inputFile} by ${milliseconds} ms`;
+      if (usingRange) {
+        infoString += ` for indices ${options.indexrange}`;
+      } else if (usingFrom && usingTo) {
+        infoString += ` for time range ${options.from} to ${options.to}`;
+      }
+      console.log(infoString);
+
+      const newSubtitleFile = shiftSubtitleFile(subtitleFile, shiftOptions);
+      updateFileName(newSubtitleFile, `shifted_${subtitleFile.fileName}`);
+      const newFileString = formatSrt(newSubtitleFile);
+
+      await writeFileContent(newSubtitleFile.filePath, newFileString);
+      console.log(`File processed and saved: ${newSubtitleFile.fileName}`);
+    } catch (error) {
+      console.error(`Error processing file: ${(error as Error).message}`);
+      process.exit(1);
+    }
   });
 
 program.parse();
