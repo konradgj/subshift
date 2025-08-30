@@ -1,5 +1,5 @@
-import { ISubtitleBlock, ISubtitleFile } from "./types/subtitles";
-import { msToTimecode } from "./utils/time";
+import { ISubtitleBlock, ISubtitleFile } from "./types/subtitles.js";
+import { msToTimecode } from "./utils/time.js";
 
 export function formatSrt(subtitleFile: ISubtitleFile): string {
   const formattedBlocks = subtitleFile.blocks.map(formatSubtitleBlock);
