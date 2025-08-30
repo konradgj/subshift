@@ -54,11 +54,17 @@ program
       console.error("You must use both -f/--from and -t/--to together");
       process.exit(1);
     }
+    let filePath: string;
+    if (options.output) {
+      filePath = options.output;
+    } else {
+      filePath = file;
+    }
 
     try {
       const fileContent = await readFileContent(file);
       const subtitleBlocks = parseSrt(fileContent);
-      const subtitleFile = initSubtitleFile(subtitleBlocks, file);
+      const subtitleFile = initSubtitleFile(subtitleBlocks, filePath);
       const shiftOptions: IShiftOptions = { ms: options.shift };
 
       if (usingRange) {
@@ -69,7 +75,7 @@ program
         shiftOptions.shiftBy = { fromTime: from, toTime: to } as ShiftByTime;
       }
 
-      let infoString = `Shifting subtitles in file: ${file} by ${options.shift} ms`;
+      let infoString = `Shifting subtitles in file: ${filePath} by ${options.shift} ms`;
       if (usingRange) {
         infoString += ` for indices ${options.range}`;
       } else if (usingFrom && usingTo) {
@@ -78,7 +84,7 @@ program
       console.log(infoString);
 
       const newSubtitleFile = shiftSubtitleFile(subtitleFile, shiftOptions);
-      updateFileName(newSubtitleFile, `shifted_${subtitleFile.fileName}`);
+      updateFileName(newSubtitleFile);
       const newFileString = formatSrt(newSubtitleFile);
 
       await writeFileContent(newSubtitleFile.filePath, newFileString);

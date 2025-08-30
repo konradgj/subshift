@@ -36,16 +36,16 @@ export function initSubtitleFile(
   return subtitleFile;
 }
 
-export function updateFileName(subtitleFile: ISubtitleFile, newName: string) {
+export function updateFileName(subtitleFile: ISubtitleFile) {
   if (!subtitleFile.fileDir || !subtitleFile.extension) {
     throw new Error(
       "File info must be initialized before updating the file name"
     );
   }
 
-  subtitleFile.fileName = newName;
+  subtitleFile.fileName = subtitleFile.fileName + ".shifted";
   subtitleFile.filePath = path.join(
     subtitleFile.fileDir!,
-    newName + subtitleFile.extension
+    subtitleFile.fileName + subtitleFile.extension
   );
 }

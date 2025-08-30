@@ -60,10 +60,10 @@ describe("updateFileName", () => {
       fileDir: "/path/to/subtitle",
       extension: ".srt",
     };
-    updateFileName(subtitleFile, "newFile");
+    updateFileName(subtitleFile);
 
-    expect(subtitleFile.fileName).toBe("newFile");
-    expect(subtitleFile.filePath).toBe("/path/to/subtitle/newFile.srt");
+    expect(subtitleFile.fileName).toBe("file.shifted");
+    expect(subtitleFile.filePath).toBe("/path/to/subtitle/file.shifted.srt");
   });
 
   it("should throw an error if fileDir or extension is missing", () => {
@@ -75,7 +75,7 @@ describe("updateFileName", () => {
       extension: "",
     };
 
-    expect(() => updateFileName(subtitleFile, "newFile")).toThrowError(
+    expect(() => updateFileName(subtitleFile)).toThrowError(
       "File info must be initialized before updating the file name"
     );
   });
@@ -83,14 +83,14 @@ describe("updateFileName", () => {
   it("should correctly handle file path when updating the file name", () => {
     const subtitleFile: ISubtitleFile = {
       blocks: [{ index: 1, start: 0, end: 1000, text: ["Subtitle 1"] }],
-      filePath: "/path/to/subtitle/oldFile.srt",
-      fileName: "oldFile",
+      filePath: "/path/to/subtitle/file.srt",
+      fileName: "file",
       fileDir: "/path/to/subtitle",
       extension: ".srt",
     };
 
-    updateFileName(subtitleFile, "shiftedFile");
-    expect(subtitleFile.filePath).toBe("/path/to/subtitle/shiftedFile.srt");
+    updateFileName(subtitleFile);
+    expect(subtitleFile.filePath).toBe("/path/to/subtitle/file.shifted.srt");
   });
 });
 
