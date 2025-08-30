@@ -1,4 +1,4 @@
-import { parseSrt } from "./core/parser";
+import { parseSrt } from "./core/parser.js";
 
 const test: string = `1
 00:00:13,681 --> 00:00:18,161

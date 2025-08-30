@@ -1,5 +1,5 @@
-import { ISubtitleBlock, ISubtitleFile } from "./types/subtitles";
-import { timecodeToMs } from "./utils/time";
+import { ISubtitleBlock, ISubtitleFile } from "./types/subtitles.js";
+import { timecodeToMs } from "./utils/time.js";
 
 export function parseSrt(text: string): ISubtitleFile {
   const blocks: ISubtitleBlock[] = [];
