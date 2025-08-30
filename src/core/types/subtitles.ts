@@ -7,9 +7,7 @@ export interface ISubtitleBlock {
 
 export interface IShiftOptions {
   ms: number; //milliseconds to shift, positive or negative
-  range?: [number, number]; //optional index range
-  fromTime?: number; //optional start time in milliseconds
-  toTime?: number; //optional end time in milliseconds
+  shiftBy?: ShiftByType;
 }
 
 export interface ISubtitleFile {
@@ -18,3 +16,16 @@ export interface ISubtitleFile {
   filePath?: string;
   format?: string;
 }
+
+type ShiftByIndex = {
+  type: "index";
+  indexRange: [number, number];
+};
+
+type ShiftByTime = {
+  type: "time";
+  fromTime: number;
+  toTime: number;
+};
+
+export type ShiftByType = ShiftByIndex | ShiftByTime;
