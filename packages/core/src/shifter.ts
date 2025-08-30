@@ -26,7 +26,7 @@ export function shiftSubtitleFile(
   };
   switch (shiftOptions.shiftBy?.type) {
     case "index": {
-      const [startIndex, endIndex] = shiftOptions.shiftBy.indexRange;
+      const [startIndex, endIndex] = shiftOptions.shiftBy.range;
       newFile.blocks = newFile.blocks.map((block) => {
         if (block.index >= startIndex && block.index <= endIndex) {
           return shiftSubtitleBlock(block, shiftOptions.ms);

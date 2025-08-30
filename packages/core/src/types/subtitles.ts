@@ -20,7 +20,7 @@ export interface ISubtitleFile {
 
 export type ShiftByIndex = {
   type: "index";
-  indexRange: [number, number];
+  range: [number, number];
 };
 
 export type ShiftByTime = {

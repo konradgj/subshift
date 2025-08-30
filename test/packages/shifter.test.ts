@@ -7,6 +7,7 @@ import {
   ISubtitleBlock,
   ISubtitleFile,
 } from "../../packages/core/src/types/subtitles";
+import { initSubtitleFile } from "../../packages/core/src/utils/file-io";
 
 describe("shiftSubtitleBlock", () => {
   test("shifts block by ms", () => {
@@ -43,7 +44,10 @@ describe("shiftSubtitleFile", () => {
   let file: ISubtitleFile;
 
   beforeEach(() => {
-    file = { blocks: blocks.map((b) => ({ ...b })) };
+    file = initSubtitleFile(
+      blocks.map((b) => ({ ...b })),
+      "/path/to/test.srt"
+    );
   });
 
   test("shifts all blocks by ms (default)", () => {
@@ -59,7 +63,7 @@ describe("shiftSubtitleFile", () => {
   test("shifts blocks by index range", () => {
     const shifted = shiftSubtitleFile(file, {
       ms: 500,
-      shiftBy: { type: "index", indexRange: [2, 3] },
+      shiftBy: { type: "index", range: [2, 3] },
     });
     expect(shifted.blocks[0].start).toBe(1000);
     expect(shifted.blocks[0].end).toBe(2000);

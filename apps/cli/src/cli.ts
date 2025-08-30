@@ -22,24 +22,31 @@ program
   .version("1.0.0");
 
 program
-  .command("shift")
   .description("shift timecodes in an subtitle file")
-  .argument("<inputFile>", "file to process")
-  .argument("<milliseconds>", "time to shift (positive or negative)", parseInt)
-  .option(
-    "-r, --indexrange <start-end>",
-    "range of subtitle indices to shift, e.g., 5-10"
+  .argument("<file>", "file to process")
+  .requiredOption(
+    "-s, --shift <ms>",
+    "Amount of time to shift (in milliseconds)",
+    parseInt
   )
-  .option("-f, --from <time>", "start time to shift from, e.g., 00:01:30,500")
-  .option("-t, --to <time>", "end time to shift to, e.g., 00:02:00,000")
-  .action(async (inputFile, milliseconds, options) => {
-    const usingRange = !!options.indexrange;
+  .option(
+    "-r, --range <start-end>",
+    "Apply shift only to a subtitle index range (e.g. 5-10)"
+  )
+  .option(
+    "--from <time>",
+    "Apply shift starting at this time (e.g. 00:01:23,456)"
+  )
+  .option("--to <time>", "Apply shift up to this time (e.g. 00:02:00,000)")
+  .option("-o, --output <file>", "Path for the output file (default: stdout)")
+  .action(async (file, options) => {
+    const usingRange = !!options.range;
     const usingFrom = !!options.from;
     const usingTo = !!options.to;
 
     if (usingRange && (usingFrom || usingTo)) {
       console.error(
-        "You cannot use -r/--indexrange together with -f/--from or -t/--to"
+        "You cannot use -r/--range together with -f/--from or -t/--to"
       );
       process.exit(1);
     }
@@ -49,22 +56,22 @@ program
     }
 
     try {
-      const fileContent = await readFileContent(inputFile);
+      const fileContent = await readFileContent(file);
       const subtitleBlocks = parseSrt(fileContent);
-      const subtitleFile = initSubtitleFile(subtitleBlocks, inputFile);
-      const shiftOptions: IShiftOptions = { ms: milliseconds };
+      const subtitleFile = initSubtitleFile(subtitleBlocks, file);
+      const shiftOptions: IShiftOptions = { ms: options.shift };
 
       if (usingRange) {
-        const [start, end] = parseIndexRange(options.indexrange);
-        shiftOptions.shiftBy = { indexRange: [start, end] } as ShiftByIndex;
+        const [start, end] = parseIndexRange(options.range);
+        shiftOptions.shiftBy = { range: [start, end] } as ShiftByIndex;
       } else if (usingFrom && usingTo) {
         const [from, to] = parseTimeRange(options.from, options.to);
         shiftOptions.shiftBy = { fromTime: from, toTime: to } as ShiftByTime;
       }
 
-      let infoString = `Shifting subtitles in file: ${inputFile} by ${milliseconds} ms`;
+      let infoString = `Shifting subtitles in file: ${file} by ${options.shift} ms`;
       if (usingRange) {
-        infoString += ` for indices ${options.indexrange}`;
+        infoString += ` for indices ${options.range}`;
       } else if (usingFrom && usingTo) {
         infoString += ` for time range ${options.from} to ${options.to}`;
       }
