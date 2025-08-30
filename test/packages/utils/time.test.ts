@@ -1,5 +1,8 @@
 import { expect, test } from "vitest";
-import { msToTimecode, timecodeToMs } from "../../../src/core/utils/time";
+import {
+  msToTimecode,
+  timecodeToMs,
+} from "../../../packages/core/src/utils/time";
 
 // Valid conversions
 const validCases: [string, number][] = [

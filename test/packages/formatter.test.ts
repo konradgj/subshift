@@ -1,6 +1,12 @@
 import { describe, expect, test } from "vitest";
-import { formatSrt, formatSubtitleBlock } from "../../src/core/formatter";
-import { ISubtitleBlock, ISubtitleFile } from "../../src/core/types/subtitles";
+import {
+  formatSrt,
+  formatSubtitleBlock,
+} from "../../packages/core/src/formatter";
+import {
+  ISubtitleBlock,
+  ISubtitleFile,
+} from "../../packages/core/src/types/subtitles";
 
 describe("formatSrt", () => {
   test("formats multiple subtitle blocks", () => {

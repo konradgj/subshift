@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { shiftSubtitleBlock, shiftSubtitleFile } from "../../src/core/shifter";
-import { ISubtitleBlock, ISubtitleFile } from "../../src/core/types/subtitles";
+import {
+  shiftSubtitleBlock,
+  shiftSubtitleFile,
+} from "../../packages/core/src/shifter";
+import {
+  ISubtitleBlock,
+  ISubtitleFile,
+} from "../../packages/core/src/types/subtitles";
 
 describe("shiftSubtitleBlock", () => {
   test("shifts block by ms", () => {

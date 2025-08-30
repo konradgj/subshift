@@ -1,19 +1,22 @@
 {
   "name": "subshift",
-  "version": "0.1.0",
-  "type": "module",
   "private": true,
-  "bin": {
-    "subshift": "./dist/bin/subshift.js"
-  },
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "tsc",
-    "postbuild": "chmod +x dist/bin/subshift.js && npm link",
-    "dev": "tsx bin/subshift.ts",
+    "build": "tsc -b",
+    "postbuild": "npm run chmod-cli && npm run link-cli",
+    "chmod-cli": "shx chmod +x apps/cli/dist/bin/subshift.js",
+    "link-cli": "cd apps/cli && npm link",
+    "dev": "npm run dev --workspace=@subshift/cli",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint . --fix",
-    "prettier": "prettier . --write"
+    "prettier": "prettier . --write",
+    "clean": "shx rm -rf node_modules apps/*/dist packages/*/dist"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",

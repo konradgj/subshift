@@ -2,7 +2,7 @@ import { describe, it, expect, afterAll } from "vitest";
 import {
   readFileContent,
   writeFileContent,
-} from "../../../src/core/utils/file-io";
+} from "../../../packages/core/src/utils/file-io";
 import { promises as fs } from "fs";
 import path from "path";
 

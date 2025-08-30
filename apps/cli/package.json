@@ -1,0 +1,17 @@
+{
+  "name": "@subshift/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "subshift": "dist/bin/subshift.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "postbuild": "chmod +x dist/bin/subshift.js && npm link",
+    "dev": "tsx bin/subshift.ts"
+  },
+  "dependencies": {
+    "@subshift/core": "*",
+    "commander": "^14.0.0"
+  }
+}
