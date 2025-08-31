@@ -2,33 +2,21 @@ import { beforeEach, describe, expect, test } from "vitest";
 import {
   shiftSubtitleBlock,
   shiftSubtitleFile,
-} from "../../packages/core/src/shifter";
-import {
   ISubtitleBlock,
   ISubtitleFile,
-} from "../../packages/core/src/types/subtitles";
-import { initSubtitleFile } from "../../packages/core/src/utils/file";
+} from "@subshift/core";
+import { mockSubtitleBlock, mockSubtitleFile } from "../helper";
 
 describe("shiftSubtitleBlock", () => {
   test("shifts block by ms", () => {
-    const block: ISubtitleBlock = {
-      index: 1,
-      start: 1000,
-      end: 2000,
-      text: ["test"],
-    };
+    const block: ISubtitleBlock = mockSubtitleBlock(1, 1000, 2000, ["test"]);
     const shifted = shiftSubtitleBlock({ ...block }, 500);
     expect(shifted.start).toBe(1500);
     expect(shifted.end).toBe(2500);
   });
 
   test("throws if start time goes negative", () => {
-    const block: ISubtitleBlock = {
-      index: 1,
-      start: 100,
-      end: 200,
-      text: ["test"],
-    };
+    const block: ISubtitleBlock = mockSubtitleBlock();
     expect(() => shiftSubtitleBlock({ ...block }, -200)).toThrow(
       "Subtitle start time cannot be negative"
     );
@@ -37,17 +25,14 @@ describe("shiftSubtitleBlock", () => {
 
 describe("shiftSubtitleFile", () => {
   const blocks: ISubtitleBlock[] = [
-    { index: 1, start: 1000, end: 2000, text: ["A"] },
-    { index: 2, start: 3000, end: 4000, text: ["B"] },
-    { index: 3, start: 5000, end: 6000, text: ["C"] },
+    mockSubtitleBlock(1, 1000, 2000, ["A"]),
+    mockSubtitleBlock(2, 3000, 4000, ["B"]),
+    mockSubtitleBlock(3, 5000, 6000, ["C"]),
   ];
   let file: ISubtitleFile;
 
   beforeEach(() => {
-    file = initSubtitleFile(
-      blocks.map((b) => ({ ...b })),
-      "/path/to/test.srt"
-    );
+    file = mockSubtitleFile({}, blocks);
   });
 
   test("shifts all blocks by ms (default)", () => {

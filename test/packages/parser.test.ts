@@ -4,7 +4,7 @@ import {
   parseSrt,
   parseTimecode,
   parseTimeRange,
-} from "../../packages/core/src/parser";
+} from "@subshift/core";
 
 const validSrt = `1\n00:00:01,000 --> 00:00:02,000\nHello world\n\n2\n00:00:02,500 --> 00:00:03,000\nSecond line`;
 const invalidSrt = `2\n00:00:01,000 --> 00:00:02,000\n\n2\n00:00:02,500 --> 00:00:03,000`;

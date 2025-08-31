@@ -1,8 +1,5 @@
 import { describe, it, expect, afterAll, vi } from "vitest";
-import {
-  readFileContent,
-  writeFileContent,
-} from "../../../packages/core/src/utils/file-io";
+import { readFileContent, writeFileContent } from "@subshift/core";
 import { promises as fs } from "fs";
 import path from "path";
 

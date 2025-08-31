@@ -3,20 +3,23 @@ import {
   initSubtitleFile,
   loadFileContent,
   updateFileName,
-} from "../../../packages/core/src/utils/file";
-import path from "path";
-import {
   ISubtitleBlock,
   ISubtitleFile,
-} from "../../../packages/core/src/types/subtitles";
-import { writeFileContent } from "../../../packages/core/src/utils/file-io";
+  writeFileContent,
+} from "@subshift/core";
 import { promises as fs } from "fs";
+import path from "path";
+import {
+  mockSrtString,
+  mockSubtitleBlock,
+  mockSubtitleFile,
+} from "../../helper";
 
 describe("loadFileContent", () => {
   const tmpFile = path.join(__dirname, "temp.test.srt");
 
   it("should load file content correctly", async () => {
-    const text = `1\n00:00:01,000 --> 00:00:02,000\nHello world\n\n2\n00:00:02,500 --> 00:00:03,000\nSecond line`;
+    const text = mockSrtString();
     await writeFileContent(tmpFile, text);
     const result = await loadFileContent(tmpFile, tmpFile);
 
@@ -29,15 +32,15 @@ describe("loadFileContent", () => {
     expect(result.blocks.length).toBe(2);
     expect(result.blocks[0]).toEqual({
       index: 1,
-      start: 1000,
-      end: 2000,
-      text: ["Hello world"],
+      start: 0,
+      end: 1000,
+      text: ["Line 1"],
     });
     expect(result.blocks[1]).toEqual({
       index: 2,
-      start: 2500,
-      end: 3000,
-      text: ["Second line"],
+      start: 1500,
+      end: 2500,
+      text: ["Line 2"],
     });
   });
 
@@ -52,29 +55,15 @@ describe("loadFileContent", () => {
 
 describe("updateFileName", () => {
   it("should correctly update the file name and file path", () => {
-    const subtitleFile: ISubtitleFile = {
-      blocks: [{ index: 1, start: 0, end: 1000, text: ["Subtitle 1"] }],
-      filePath: "/path/to/subtitle/file.srt",
-      fileName: "file",
-      fileDir: "/path/to/subtitle",
-      extension: ".srt",
-      fileStats: { blocksTotal: 1, blocksShifted: 0 },
-    };
+    const subtitleFile = mockSubtitleFile();
     updateFileName(subtitleFile);
 
-    expect(subtitleFile.fileName).toBe("file.shifted");
-    expect(subtitleFile.filePath).toBe("/path/to/subtitle/file.shifted.srt");
+    expect(subtitleFile.fileName).toBe("mock.shifted");
+    expect(subtitleFile.filePath).toBe("/tmp/mock.shifted.srt");
   });
 
   it("should throw an error if fileDir or extension is missing", () => {
-    const subtitleFile: ISubtitleFile = {
-      blocks: [{ index: 1, start: 0, end: 1000, text: ["Subtitle 1"] }],
-      filePath: "/path/to/subtitle/file.srt",
-      fileName: "file",
-      fileDir: "",
-      extension: "",
-      fileStats: { blocksTotal: 1, blocksShifted: 0 },
-    };
+    const subtitleFile = mockSubtitleFile({ fileDir: "", extension: "" });
 
     expect(() => updateFileName(subtitleFile)).toThrowError(
       "File does not have a valid directory"
@@ -86,25 +75,18 @@ describe("updateFileName", () => {
   });
 
   it("should correctly handle file path when updating the file name", () => {
-    const subtitleFile: ISubtitleFile = {
-      blocks: [{ index: 1, start: 0, end: 1000, text: ["Subtitle 1"] }],
-      filePath: "/path/to/subtitle/file.srt",
-      fileName: "file",
-      fileDir: "/path/to/subtitle",
-      extension: ".srt",
-      fileStats: { blocksTotal: 1, blocksShifted: 0 },
-    };
+    const subtitleFile = mockSubtitleFile();
 
     updateFileName(subtitleFile);
-    expect(subtitleFile.filePath).toBe("/path/to/subtitle/file.shifted.srt");
+    expect(subtitleFile.filePath).toBe("/tmp/mock.shifted.srt");
   });
 });
 
 describe("initSubtitleFile", () => {
   it("should correctly initialize subtitle file properties", () => {
     const subtitleBlocks: ISubtitleBlock[] = [
-      { index: 1, start: 0, end: 1000, text: ["Subtitle 1"] },
-      { index: 2, start: 1000, end: 2000, text: ["Subtitle 2"] },
+      mockSubtitleBlock(1, 0, 1000),
+      mockSubtitleBlock(2, 1500, 2500),
     ];
     const filePath = "/path/to/subtitle/file.srt";
     const result: ISubtitleFile = initSubtitleFile(subtitleBlocks, filePath);
