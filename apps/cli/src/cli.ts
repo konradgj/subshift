@@ -3,6 +3,7 @@ import {
   formatSrt,
   initSubtitleFile,
   IShiftOptions,
+  msToTimecode,
   parseIndexRange,
   parseSrt,
   parseTimeRange,
@@ -13,6 +14,7 @@ import {
   updateFileName,
   writeFileContent,
 } from "@subshift/core";
+import chalk from "chalk";
 
 const program = new Command();
 
@@ -39,21 +41,43 @@ program
   )
   .option("--to <time>", "Apply shift up to this time (e.g. 00:02:00,000)")
   .option("-o, --output <file>", "Path for the output file (default: stdout)")
+  .option("--in-place", "Modify the file in place (overwrites original)")
+  .option("--dry-run", "Preview the shifted subtitles without saving")
+  .option("--diff", "Show a diff of timecode changes without saving")
   .action(async (file, options) => {
     const usingRange = !!options.range;
     const usingFrom = !!options.from;
     const usingTo = !!options.to;
+    const usingOutput = !!options.output;
+    const usingInPlace = !!options.inPlace;
+    const usingDryRun = !!options.dryRun;
+    const usingDiff = !!options.diff;
 
     if (usingRange && (usingFrom || usingTo)) {
       console.error(
-        "You cannot use -r/--range together with -f/--from or -t/--to"
+        chalk.red(
+          "You cannot use -r/--range together with -f/--from or -t/--to"
+        )
       );
       process.exit(1);
     }
     if (usingFrom !== usingTo) {
-      console.error("You must use both -f/--from and -t/--to together");
+      console.error(
+        chalk.red("You must use both -f/--from and -t/--to together")
+      );
       process.exit(1);
     }
+    if (usingInPlace && usingOutput) {
+      console.error(
+        chalk.red("You cannot use --in-place together with -o/--output")
+      );
+      process.exit(1);
+    }
+    if (usingDryRun && usingDiff) {
+      console.error(chalk.red("You cannot use --dry-run together with --diff"));
+      process.exit(1);
+    }
+
     let filePath: string;
     if (options.output) {
       filePath = options.output;
@@ -69,10 +93,17 @@ program
 
       if (usingRange) {
         const [start, end] = parseIndexRange(options.range);
-        shiftOptions.shiftBy = { range: [start, end] } as ShiftByIndex;
+        shiftOptions.shiftBy = {
+          type: "index",
+          range: [start, end],
+        } as ShiftByIndex;
       } else if (usingFrom && usingTo) {
         const [from, to] = parseTimeRange(options.from, options.to);
-        shiftOptions.shiftBy = { fromTime: from, toTime: to } as ShiftByTime;
+        shiftOptions.shiftBy = {
+          type: "time",
+          fromTime: from,
+          toTime: to,
+        } as ShiftByTime;
       }
 
       let infoString = `Shifting subtitles in file: ${filePath} by ${options.shift} ms`;
@@ -84,13 +115,49 @@ program
       console.log(infoString);
 
       const newSubtitleFile = shiftSubtitleFile(subtitleFile, shiftOptions);
-      updateFileName(newSubtitleFile);
+      if (!usingInPlace) {
+        updateFileName(newSubtitleFile, usingOutput);
+      }
       const newFileString = formatSrt(newSubtitleFile);
 
+      if (usingDiff) {
+        console.log("===== Diff Preview =====");
+
+        subtitleBlocks.forEach((block, index) => {
+          const newBlock = newSubtitleFile.blocks[index];
+          if (block.start !== newBlock.start || block.end !== newBlock.end) {
+            console.log(`Index ${block.index}:`);
+            console.log(
+              chalk.red(
+                ` - ${msToTimecode(block.start)} --> ${msToTimecode(block.end)}`
+              )
+            );
+            console.log(
+              chalk.green(
+                ` + ${msToTimecode(newBlock.start)} --> ${msToTimecode(
+                  newBlock.end
+                )}`
+              )
+            );
+          }
+        });
+        process.exit(0);
+      }
+
+      if (usingDryRun) {
+        console.log("=== Dry Run Preview ===");
+        console.log(newFileString);
+        process.exit(0);
+      }
+
       await writeFileContent(newSubtitleFile.filePath, newFileString);
-      console.log(`File processed and saved: ${newSubtitleFile.fileName}`);
+      console.log(
+        chalk.green(`File processed and saved: ${newSubtitleFile.filePath}`)
+      );
     } catch (error) {
-      console.error(`Error processing file: ${(error as Error).message}`);
+      console.error(
+        chalk.red(`Error processing file: ${(error as Error).message}`)
+      );
       process.exit(1);
     }
   });

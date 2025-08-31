@@ -76,7 +76,11 @@ describe("updateFileName", () => {
     };
 
     expect(() => updateFileName(subtitleFile)).toThrowError(
-      "File info must be initialized before updating the file name"
+      "File does not have a valid directory"
+    );
+    subtitleFile.fileDir = "/path/to/subtitle";
+    expect(() => updateFileName(subtitleFile)).toThrowError(
+      "File does not have a valid extension"
     );
   });
 

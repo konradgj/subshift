@@ -20,10 +20,7 @@ export function shiftSubtitleFile(
   subtitleFile: ISubtitleFile,
   shiftOptions: IShiftOptions
 ): ISubtitleFile {
-  const newFile: ISubtitleFile = {
-    ...subtitleFile,
-    blocks: [...subtitleFile.blocks],
-  };
+  const newFile: ISubtitleFile = cloneSubtitleFile(subtitleFile);
   switch (shiftOptions.shiftBy?.type) {
     case "index": {
       const [startIndex, endIndex] = shiftOptions.shiftBy.range;
@@ -53,4 +50,20 @@ export function shiftSubtitleFile(
     }
   }
   return newFile;
+}
+
+export function cloneSubtitleBlock(block: ISubtitleBlock): ISubtitleBlock {
+  return {
+    index: block.index,
+    start: block.start,
+    end: block.end,
+    text: [...block.text], // clone the array so mutations don’t leak
+  };
+}
+
+export function cloneSubtitleFile(file: ISubtitleFile): ISubtitleFile {
+  return {
+    ...file,
+    blocks: file.blocks.map(cloneSubtitleBlock),
+  };
 }

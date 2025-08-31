@@ -36,16 +36,23 @@ export function initSubtitleFile(
   return subtitleFile;
 }
 
-export function updateFileName(subtitleFile: ISubtitleFile) {
-  if (!subtitleFile.fileDir || !subtitleFile.extension) {
-    throw new Error(
-      "File info must be initialized before updating the file name"
-    );
+export function updateFileName(
+  subtitleFile: ISubtitleFile,
+  manualName: boolean = false
+) {
+  if (!subtitleFile.fileDir) {
+    throw new Error("File does not have a valid directory");
+  }
+  if (!subtitleFile.extension) {
+    throw new Error("File does not have a valid extension");
   }
 
-  subtitleFile.fileName = subtitleFile.fileName + ".shifted";
+  if (!manualName) {
+    subtitleFile.fileName = `${subtitleFile.fileName}.shifted`;
+  }
+
   subtitleFile.filePath = path.join(
     subtitleFile.fileDir!,
-    subtitleFile.fileName + subtitleFile.extension
+    `${subtitleFile.fileName}${subtitleFile.extension}`
   );
 }
