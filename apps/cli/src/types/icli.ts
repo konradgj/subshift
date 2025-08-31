@@ -4,7 +4,14 @@ export interface ICLIOptions {
   from?: string;
   to?: string;
   output?: string;
-  inPlace?: boolean;
-  dryRun?: boolean;
+  outdir?: string;
+  inplace?: boolean;
+  dryrun?: boolean;
   diff?: boolean;
+  includehidden?: boolean;
+}
+
+export interface ICollectOptions {
+  extentions?: string[];
+  includeHidden?: boolean;
 }

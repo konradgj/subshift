@@ -51,7 +51,7 @@ describe("validateOptions", () => {
   test("throws if inPlace and output are both provided", () => {
     const options: ICLIOptions = {
       shift: 10,
-      inPlace: true,
+      inplace: true,
       output: "file.srt",
     };
 
@@ -62,7 +62,7 @@ describe("validateOptions", () => {
   });
 
   test("throws if dryRun and diff are both provided", () => {
-    const options: ICLIOptions = { shift: 10, dryRun: true, diff: true };
+    const options: ICLIOptions = { shift: 10, dryrun: true, diff: true };
 
     expect(() => validateOptions(options)).toThrow("process.exit called");
     expect(consoleMock).toHaveBeenCalledWith(

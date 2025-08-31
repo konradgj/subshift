@@ -2,13 +2,15 @@ import { Command } from "commander";
 import { formatSrt, shiftSubtitleFile } from "@subshift/core";
 import chalk from "chalk";
 import {
+  collectFiles,
   loadFileContent,
   loadShiftOptions,
   saveSubtitleFile,
   showDiff,
   validateOptions,
 } from "./helpers.js";
-import { ICLIOptions } from "./types/icli.js";
+import { ICLIOptions, ICollectOptions } from "./types/icli.js";
+import path from "path";
 
 const program = new Command();
 
@@ -19,7 +21,7 @@ program
 
 program
   .description("shift timecodes in an subtitle file")
-  .argument("<file>", "file to process")
+  .argument("<inputs...>", "subtitle file(s) or directories to process")
   .requiredOption(
     "-s, --shift <ms>",
     "Amount of time to shift (in milliseconds)",
@@ -35,38 +37,53 @@ program
   )
   .option("--to <time>", "Apply shift up to this time (e.g. 00:02:00,000)")
   .option("-o, --output <file>", "Path for the output file (default: stdout)")
-  .option("--in-place", "Modify the file in place (overwrites original)")
-  .option("--dry-run", "Preview the shifted subtitles without saving")
+  .option("--outdir <dir>", "Directory to save output files")
+  .option("--inplace", "Modify the file in place (overwrites original)")
+  .option("--dryrun", "Preview the shifted subtitles without saving")
   .option("--diff", "Show a diff of timecode changes without saving")
-  .action(async (file: string, options: ICLIOptions) => {
+  .option("--includehidden", "Include hidden files when processing directories")
+  .action(async (inputs: string[], options: ICLIOptions) => {
     validateOptions(options);
 
-    let outPath: string;
-    if (options.output) {
-      outPath = options.output;
-    } else {
-      outPath = file;
+    const collectOpts: ICollectOptions = {
+      includeHidden: options.includehidden,
+    };
+    const files = collectFiles(inputs, collectOpts);
+    if (files.length === 0) {
+      console.error(chalk.red("No subtitle files found to process."));
+      process.exit(1);
     }
 
-    try {
-      const subtitleFile = await loadFileContent(file, outPath);
-      const shiftOptions = loadShiftOptions(options);
-      const newSubtitleFile = shiftSubtitleFile(subtitleFile, shiftOptions);
-      const newFileString = formatSrt(newSubtitleFile);
-
-      if (options.diff) {
-        showDiff(subtitleFile, newSubtitleFile);
-        process.exit(0);
+    for (const file of files) {
+      let outPath: string;
+      if (options.outdir) {
+        outPath = path.join(options.outdir, path.basename(file));
+      } else if (options.output) {
+        outPath = options.output;
+      } else {
+        outPath = file;
       }
 
-      await saveSubtitleFile(newSubtitleFile, newFileString, options);
+      try {
+        const subtitleFile = await loadFileContent(file, outPath);
+        const shiftOptions = loadShiftOptions(options);
+        const newSubtitleFile = shiftSubtitleFile(subtitleFile, shiftOptions);
+        const newFileString = formatSrt(newSubtitleFile);
 
-      console.log(
-        chalk.green(`File processed and saved: ${newSubtitleFile.filePath}`)
-      );
-    } catch (error) {
-      console.error(chalk.red(`Error: ${(error as Error).message}`));
-      process.exit(1);
+        if (options.diff) {
+          showDiff(subtitleFile, newSubtitleFile);
+          process.exit(0);
+        }
+
+        await saveSubtitleFile(newSubtitleFile, newFileString, options);
+
+        console.log(
+          chalk.green(`File processed and saved: ${newSubtitleFile.filePath}`)
+        );
+      } catch (error) {
+        console.error(chalk.red(`Error: ${(error as Error).message}`));
+        process.exit(1);
+      }
     }
   });
 
