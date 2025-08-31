@@ -11,6 +11,7 @@ import {
 } from "./helpers.js";
 import { ICLIOptions, ICollectOptions, ISummary } from "./types/icli.js";
 import path from "path";
+import cliProgress from "cli-progress";
 
 const program = new Command();
 
@@ -54,6 +55,15 @@ program
       process.exit(1);
     }
 
+    const progressBar = new cliProgress.SingleBar({
+      format:
+        "Processing |" +
+        chalk.cyan("{bar}") +
+        "| {percentage}% || {value}/{total} Files",
+    });
+
+    progressBar.start(files.length, 0, { filename: "" });
+
     const summary: ISummary = {
       totalFiles: files.length,
       successfulFiles: [],
@@ -89,7 +99,9 @@ program
           error: (error as Error).message,
         });
       }
+      progressBar.increment(1, { filename: path.basename(file) });
     }
+    progressBar.stop();
     writeSummary(summary);
     process.exit(summary.failedFiles.length > 0 ? 1 : 0);
   });
