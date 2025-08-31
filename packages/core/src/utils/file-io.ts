@@ -1,6 +1,4 @@
 import { promises as fs } from "fs";
-import { ISubtitleBlock, ISubtitleFile } from "../types/subtitles.js";
-import path from "path";
 
 export async function readFileContent(path: string): Promise<string> {
   try {
@@ -16,43 +14,4 @@ export async function writeFileContent(path: string, content: string) {
   } catch (error) {
     throw new Error(`Failed to write file: ${error}`);
   }
-}
-
-export function initSubtitleFile(
-  subtitleBlocks: ISubtitleBlock[],
-  filePath: string
-): ISubtitleFile {
-  const fullPath = path.resolve(filePath);
-  const dir = path.dirname(fullPath);
-  const ext = path.extname(fullPath);
-  const name = path.basename(fullPath, ext);
-  const subtitleFile: ISubtitleFile = {
-    blocks: subtitleBlocks,
-    filePath: fullPath,
-    fileName: name,
-    fileDir: dir,
-    extension: ext.toLowerCase(),
-  };
-  return subtitleFile;
-}
-
-export function updateFileName(
-  subtitleFile: ISubtitleFile,
-  manualName: boolean = false
-) {
-  if (!subtitleFile.fileDir) {
-    throw new Error("File does not have a valid directory");
-  }
-  if (!subtitleFile.extension) {
-    throw new Error("File does not have a valid extension");
-  }
-
-  if (!manualName) {
-    subtitleFile.fileName = `${subtitleFile.fileName}.shifted`;
-  }
-
-  subtitleFile.filePath = path.join(
-    subtitleFile.fileDir!,
-    `${subtitleFile.fileName}${subtitleFile.extension}`
-  );
 }

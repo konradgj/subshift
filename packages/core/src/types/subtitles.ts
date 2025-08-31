@@ -16,6 +16,12 @@ export interface ISubtitleFile {
   filePath: string;
   fileDir: string;
   extension: string;
+  fileStats: ISubtitleFileStats;
+}
+
+export interface ISubtitleFileStats {
+  blocksTotal: number;
+  blocksShifted: number;
 }
 
 export type ShiftByIndex = {

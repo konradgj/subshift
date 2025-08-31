@@ -1,15 +1,15 @@
 import { Command } from "commander";
-import { formatSrt, shiftSubtitleFile } from "@subshift/core";
+import { formatSrt, loadFileContent, shiftSubtitleFile } from "@subshift/core";
 import chalk from "chalk";
 import {
   collectFiles,
-  loadFileContent,
   loadShiftOptions,
   saveSubtitleFile,
   showDiff,
   validateOptions,
+  writeSummary,
 } from "./helpers.js";
-import { ICLIOptions, ICollectOptions } from "./types/icli.js";
+import { ICLIOptions, ICollectOptions, ISummary } from "./types/icli.js";
 import path from "path";
 
 const program = new Command();
@@ -54,6 +54,12 @@ program
       process.exit(1);
     }
 
+    const summary: ISummary = {
+      totalFiles: files.length,
+      successfulFiles: [],
+      failedFiles: [],
+    };
+
     for (const file of files) {
       let outPath: string;
       if (options.outdir) {
@@ -76,15 +82,16 @@ program
         }
 
         await saveSubtitleFile(newSubtitleFile, newFileString, options);
-
-        console.log(
-          chalk.green(`File processed and saved: ${newSubtitleFile.filePath}`)
-        );
+        summary.successfulFiles.push(newSubtitleFile);
       } catch (error) {
-        console.error(chalk.red(`Error: ${(error as Error).message}`));
-        process.exit(1);
+        summary.failedFiles.push({
+          filePath: file,
+          error: (error as Error).message,
+        });
       }
     }
+    writeSummary(summary);
+    process.exit(summary.failedFiles.length > 0 ? 1 : 0);
   });
 
 program.parse();

@@ -1,3 +1,5 @@
+import { ISubtitleFile } from "@subshift/core";
+
 export interface ICLIOptions {
   shift: number;
   range?: string;
@@ -14,4 +16,15 @@ export interface ICLIOptions {
 export interface ICollectOptions {
   extentions?: string[];
   includeHidden?: boolean;
+}
+
+export interface ISummary {
+  totalFiles: number;
+  successfulFiles: ISubtitleFile[];
+  failedFiles: IFailedFile[];
+}
+
+export interface IFailedFile {
+  filePath: string;
+  error: string;
 }

@@ -1,19 +1,16 @@
 import {
-  initSubtitleFile,
   IShiftOptions,
   ISubtitleFile,
   msToTimecode,
   parseIndexRange,
-  parseSrt,
   parseTimeRange,
-  readFileContent,
   ShiftByIndex,
   ShiftByTime,
   updateFileName,
   writeFileContent,
 } from "@subshift/core";
 import chalk from "chalk";
-import { ICLIOptions, ICollectOptions } from "./types/icli";
+import { ICLIOptions, ICollectOptions, ISummary } from "./types/icli";
 import fs from "fs";
 import path from "path";
 
@@ -82,15 +79,6 @@ export function collectFromPath(
   return [];
 }
 
-export async function loadFileContent(
-  file: string,
-  outPath: string
-): Promise<ISubtitleFile> {
-  const fileContent = await readFileContent(file);
-  const subtitleBlocks = parseSrt(fileContent);
-  return initSubtitleFile(subtitleBlocks, outPath);
-}
-
 export function loadShiftOptions(options: ICLIOptions): IShiftOptions {
   const shiftOptions: IShiftOptions = { ms: options.shift };
 
@@ -140,10 +128,36 @@ export async function saveSubtitleFile(
   if (options.dryrun) {
     console.log(chalk.yellow("=== Dry Run Preview ==="));
     console.log(fileString);
-    process.exit(0);
+    return;
   }
   if (!options.inplace) {
     updateFileName(file, !!options.output);
   }
   await writeFileContent(file.filePath, fileString);
+}
+
+export function writeSummary(summary: ISummary) {
+  console.log(chalk.bold.yellow("\n=== Batch Processing Summary ==="));
+  console.log(`Total files processed: ${summary.totalFiles}`);
+  console.log(
+    chalk.green(`Successfully processed: ${summary.successfulFiles.length}`)
+  );
+  console.log(chalk.red(`Failed files: ${summary.failedFiles.length}`));
+
+  if (summary.successfulFiles.length > 0) {
+    console.log(chalk.yellow("--- File Details ---"));
+    summary.successfulFiles.forEach((file) => {
+      const stats = file.fileStats;
+      console.log(chalk.blue(`File: ${file.filePath}`));
+      console.log(`  Total blocks: ${stats.blocksTotal}`);
+      console.log(`  Blocks shifted: ${stats.blocksShifted}`);
+    });
+  }
+
+  if (summary.failedFiles.length > 0) {
+    console.log(chalk.yellow("--- Failed Files ---"));
+    summary.failedFiles.forEach((file) =>
+      console.log(chalk.red(`  ${file.filePath}: ${file.error}`))
+    );
+  }
 }

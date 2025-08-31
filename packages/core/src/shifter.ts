@@ -26,6 +26,7 @@ export function shiftSubtitleFile(
       const [startIndex, endIndex] = shiftOptions.shiftBy.range;
       newFile.blocks = newFile.blocks.map((block) => {
         if (block.index >= startIndex && block.index <= endIndex) {
+          newFile.fileStats.blocksShifted += 1;
           return shiftSubtitleBlock(block, shiftOptions.ms);
         }
         return block;
@@ -36,6 +37,7 @@ export function shiftSubtitleFile(
       const { fromTime, toTime } = shiftOptions.shiftBy;
       newFile.blocks = newFile.blocks.map((block) => {
         if (block.start >= fromTime && block.end <= toTime) {
+          newFile.fileStats.blocksShifted += 1;
           return shiftSubtitleBlock(block, shiftOptions.ms);
         }
         return block;
@@ -43,9 +45,10 @@ export function shiftSubtitleFile(
       break;
     }
     default: {
-      newFile.blocks = newFile.blocks.map((block) =>
-        shiftSubtitleBlock(block, shiftOptions.ms)
-      );
+      newFile.blocks = newFile.blocks.map((block) => {
+        newFile.fileStats.blocksShifted += 1;
+        return shiftSubtitleBlock(block, shiftOptions.ms);
+      });
       break;
     }
   }

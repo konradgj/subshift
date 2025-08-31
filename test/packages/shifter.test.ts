@@ -7,7 +7,7 @@ import {
   ISubtitleBlock,
   ISubtitleFile,
 } from "../../packages/core/src/types/subtitles";
-import { initSubtitleFile } from "../../packages/core/src/utils/file-io";
+import { initSubtitleFile } from "../../packages/core/src/utils/file";
 
 describe("shiftSubtitleBlock", () => {
   test("shifts block by ms", () => {
