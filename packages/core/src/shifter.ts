@@ -2,7 +2,7 @@ import {
   IShiftOptions,
   ISubtitleBlock,
   ISubtitleFile,
-} from "./types/subtitles";
+} from "./types/subtitles.js";
 
 export function shiftSubtitleBlock(
   block: ISubtitleBlock,
