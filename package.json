@@ -19,7 +19,7 @@
     "coverage": "vitest run --coverage",
     "lint": "eslint . --fix",
     "prettier": "prettier . --write",
-    "clean": "shx rm -rf node_modules apps/*/dist packages/*/dist"
+    "clean": "shx rm -rf apps/*/dist packages/*/dist"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
