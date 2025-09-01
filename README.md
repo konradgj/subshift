@@ -25,11 +25,13 @@ npm install
 # 3. Build the CLI
 npm run build
 ```
+NOTE: build step might need sudo or admin privileges as it includes `npm link`
 
 ### Uninstall
 ```bash
-npm unlink -g @subshift/cli 
+npm unlink -g @subshift/cli
 ```
+NOTE: `npm unlink` might need sudo or admin privileges
 
 ## Usage  
 
