@@ -2,6 +2,9 @@
   "name": "subshift",
   "private": true,
   "version": "0.1.0",
+  "engines": {
+    "node": ">=16.14.0"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"

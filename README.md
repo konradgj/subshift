@@ -9,8 +9,8 @@ Supports single files, multiple files, or entire folders.
 
 ## Installation  
 
-### Prerequisites  
-- Node.js (>= 16 recommended)  
+### Prerequisites 
+- **Node.js** >= 16.14.0
 - npm  
 
 ### Install
