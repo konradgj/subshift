@@ -1,4 +1,5 @@
 import { promises as fs } from "fs";
+import path from "path";
 
 export async function readFileContent(path: string): Promise<string> {
   try {
@@ -8,9 +9,11 @@ export async function readFileContent(path: string): Promise<string> {
   }
 }
 
-export async function writeFileContent(path: string, content: string) {
+export async function writeFileContent(filePath: string, content: string) {
   try {
-    await fs.writeFile(path, content, "utf-8");
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, content, "utf-8");
   } catch (error) {
     throw new Error(`Failed to write file: ${error}`);
   }
