@@ -63,37 +63,37 @@ subshift <inputs...> [options]
 
 ### Shift a single file by +2 seconds  
 ```bash
-subshift movie.srt -s 2000
+subshift examples/sub1.example.srt -s 2000
 ```
 
 ### Shift all `.srt` files in a folder back by 500 ms  
 ```bash
-subshift ./subtitles -s -500
+subshift ./examples -s -500
 ```
 
 ### Shift only blocks 10–20  
 ```bash
-subshift movie.srt -s 1000 -r 10-20
+subshift examples/sub1.example.srt -s 1000 -r 10-20
 ```
 
 ### Shift between two timecodes  
 ```bash
-subshift movie.srt -s 750 --from 00:01:00,000 --to 00:02:00,000
+subshift examples/sub1.example.srt -s 750 --from 00:01:00,000 --to 00:02:00,000
 ```
 
 ### Save results to a different folder  
 ```bash
-subshift ./subs -s 1500 --outdir ./shifted-subs
+subshift ./examples -s 1500 --outdir ./shifted-examples
 ```
 
 ### Preview changes without saving  
 ```bash
-subshift movie.srt -s 2000 --dryrun
+subshift examples/sub1.example.srt -s 2000 --dryrun
 ```
 
 ### Show a diff of changes without saving 
 ```bash
-subshift movie.srt -s 2000 --diff
+subshift examples/sub1.example.srt -s 2000 --diff
 ```
 
 
