@@ -26,6 +26,10 @@ npm install
 npm run build
 ```
 
+### Uninstall
+```bash
+npm unlink -g @subshift/cli 
+```
 
 ## Usage  
 
