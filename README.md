@@ -70,6 +70,10 @@ subshift examples/sub1.example.srt -s 2000
 ```bash
 subshift ./examples -s -500
 ```
+### Shift files in in place  
+```bash
+subshift ./examples -s -500 --inplace
+```
 
 ### Shift only blocks 10–20  
 ```bash
