@@ -1,3 +1,0 @@
-{
-  "typescript.suggest.excludeImports": ["node:test"]
-}
