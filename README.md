@@ -44,13 +44,13 @@ subshift <inputs...> [options]
 
 ### Options  
 
-| Option | Alias | Description |
+| Option | Required | Description |
 |--------|-------|-------------|
 | `-s, --shift <ms>` | required | Amount of time to shift in **milliseconds** (positive or negative) |
 | `-r, --range <start-end>` |  | Apply shift only to subtitle indices (e.g. `5-10`) |
 | `--from <time>` |  | Apply shift starting at this time (e.g. `00:01:23,456`) |
 | `--to <time>` |  | Apply shift up to this time (e.g. `00:02:00,000`) |
-| `-o, --output <file>` |  | Save to specific output file (default: overwrite input or stdout) |
+| `-o, --output <file>` |  | Save to specific output file (default: overwrite input file) |
 | `--outdir <dir>` |  | Save outputs in a given directory |
 | `--inplace` |  | Modify the file(s) in place |
 | `--dryrun` |  | Preview shifted subtitles without saving |
